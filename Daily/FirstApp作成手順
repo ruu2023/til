@@ -1,0 +1,168 @@
+1. アプリケーションの新規作成手順
+# ホームディレクトリへ移動
+% cd
+
+# projectsディレクトリに移動
+% cd ~/projects
+
+# Railsのバージョン7.0.0を用いて、FirstAppを作成
+% rails _7.0.0_ new first_app -d mysql
+
+# 「first_app」ディレクトリに移動
+% cd first_app
+
+# first_appディレクトリにいることを確認
+% pwd
+
+# データベースの作成
+% rails db:create
+
+
+2. 一覧機能（indexアクション）を実装する手順
+# first_appディレクトリにいることを確認
+% pwd
+
+# postsコントローラーを作成
+% rails g controller posts
+
+#config/routes.rb
+Rails.application.routes.draw do
+  get 'posts', to: 'posts#index'
+end
+
+#app/controllers/posts_controller.rb
+class PostsController < ApplicationController
+
+  def index  # indexアクションを定義した
+  end
+
+end
+
+#app/controllers/posts_controller.rb
+class PostsController < ApplicationController
+  def index
+    @posts = Post.all  # すべてのレコードを@postsに代入
+  end
+end
+
+# first_appディレクトリにいることを確認
+% pwd
+
+# postモデルを作成
+% rails g model post
+
+#db/migrate/20XXXXXXXXXXXX_create_posts.rb
+class CreatePosts < ActiveRecord::Migration[7.0]
+  def change
+    create_table :posts do |t|
+      t.text :content
+      t.timestamps
+    end
+  end
+end
+
+# first_appのディレクトリにいることを確認
+% pwd
+
+# マイグレーションを実行
+% rails db:migrate
+
+#app/views/posts/index.html.erb
+<h1>トップページ</h1>
+<% @posts.each do |post| %>
+  <%= post.content %>
+  <%= post.created_at %>
+<% end %>
+
+#rails サーバーを起動
+rails s
+
+それでは、ブラウザで確認してみましょう。
+
+http://localhost:3000/posts
+
+#app/views/posts/index.html.erb
+<h1>トップページ</h1>
+<% @posts.each do |post| %>
+  <div class="post">
+    <div class="post-date">
+      投稿日時：<%= post.created_at %>
+    </div>
+    <div class="post-content">
+      <%= post.content %>
+    </div>
+  </div>
+<% end %>
+
+#app/assets/stylesheets/posts.css
+.post{
+  border: 1px solid;
+  width: 40%;
+  margin-top: 30px;
+}
+
+.post-date{
+  color: gray;
+}
+
+
+3. 投稿画面（newアクション）を作成する手順
+#config/routes.rb
+Rails.application.routes.draw do
+  get 'posts', to: 'posts#index'
+  get 'posts/new', to: 'posts#new'
+end
+
+#rails routesの確認
+posts_new   GET     /posts/new(.:format)  posts#new
+
+#app/controllers/posts_controller.rb
+class PostsController < ApplicationController
+  def index
+    @posts = Post.all
+  end
+
+  def new
+  end
+end
+
+#app/views/postsディレクトリに、new.html.erbを作成しましょう。
+
+#app/views/posts/new.html.erb
+<h1>新規投稿ページ</h1>
+<%= form_with url: "/posts", method: :post, local: true do |form| %>
+  <%= form.text_field :content %>
+  <%= form.submit '投稿する' %>
+<% end %>
+
+#app/views/posts/index.html.erb
+<h1>トップページ</h1>
+<%= link_to '新規投稿', '/posts/new' %>
+/以下省略
+
+#以下にアクセスして、確認しましょう。
+http://localhost:3000/posts/new
+
+
+4. 保存機能（createアクション）を実装する手順
+#config/routes.rb
+Rails.application.routes.draw do
+  get 'posts', to: 'posts#index'
+  get 'posts/new', to: 'posts#new'
+  post 'posts', to: 'posts#create'
+end
+
+#app/controllers/posts_controller.rb
+class PostsController < ApplicationController
+  def index
+    @posts = Post.all
+  end
+
+  def new
+  end
+
+  def create
+    Post.create(content: params[:content])
+    redirect_to "/posts"
+  end
+end
