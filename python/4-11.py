@@ -24,5 +24,5 @@ if na == mx:
   print("a")
 elif nb == mx:
   print("b")
-elif nc == mx:
+elif nc == mx: 
   print("c")
