@@ -19,12 +19,23 @@
 N = int(input())
 
 z = 0
+ans = ""
 
 # 1から55555までの整数をすべて調べる
 for i in range(1, 55555 + 1):
 
   si = str(i)
 
-
   ok = True
 
+  for s in si:
+    if s != si[0]:
+      ok = False
+
+  if ok:
+    z += 1
+
+  if ok and z == N:
+    ans = i
+
+print(ans)
