@@ -15,3 +15,5 @@ for i in range(A, B + 1):
 
 # 出力
 print("OK" if exist else "NG")
+
+#test
